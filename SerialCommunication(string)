@@ -1,0 +1,46 @@
+/*
+Baud Rate generation
+ *  n = > required baudrate
+ * BRGh = 0
+ * SPBRG = (Fosc/(64*n))-1
+ * for 9600 baudrate SPBRG ~ 77
+ */
+#include <xc.h>
+//#include<pic18f4550.h>
+#define Fosc 48000000UL
+void UARTInit(unsigned int baudrate){
+    TRISCbits.RC6 = 0;
+    TRISCbits.RC7 = 1;
+    SPBRG = (unsigned char)(((Fosc/64)/baudrate)-1);
+    BAUDCON = 0b00000000;
+    TXSTA   = 0b00100000;
+    RCSTA   = 0b10010000;
+    RCIE    = 1;
+}
+void main(void) {
+    
+    UARTInit(9600);
+    int choice,cont;
+    int *ptr;
+    char transmit[25]="PICT\n";
+    char count = 0x48; 
+    char flag;
+    while(1){
+        if(RCIF==0){
+            for(int i=0;i<25;i++){
+                while(TXIF==0);
+                    TXIF=0;
+                TXREG = transmit[i];
+            }  
+        }
+        flag = RCREG;
+        while(flag>='0' && flag <='9'){
+            while(RCIF==0);
+            RCIF = 1; 
+            break;
+        }
+          
+        ptr=&choice;
+    }
+    return;
+}

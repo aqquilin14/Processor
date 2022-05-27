@@ -1,0 +1,16 @@
+#include <xc.h>
+
+void main(void) {
+    
+    int x=25;
+    int y=10;
+    PORTD:
+    while(1)
+    {
+        PORTD=x-y;
+        STATUS;
+    
+    }
+    
+    return;
+}

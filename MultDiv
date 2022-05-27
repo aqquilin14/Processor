@@ -1,0 +1,31 @@
+#include <xc.h>
+
+void main(void) {
+    int x,d;
+    PIE1=200;
+    PIE2=10;
+    PORTB;
+    PORTD;
+    int * ptr;
+    
+    while(1)
+    {
+        if(d==0)
+        {
+            x=PIE1*PIE2;
+            PORTB=x/256;
+            PORTD=x%256;
+            
+        }
+        if(d==1)
+        {
+            PORTB=PIE1/PIE2;
+            PORTD=PIE1%PIE2;
+        }
+        ptr=&d;
+        ptr=&x;
+    
+    }
+    
+    return;
+}

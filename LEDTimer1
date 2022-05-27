@@ -1,0 +1,107 @@
+// LED BLINK AFTER X SECONDS
+// USE TIMER 0 WITOUT ISR TO GENERATE DELAY OF Y SECONDS
+
+/*
+ CALCULATIONS
+ * N = T*F/4
+ *   = 10^-3 * 48 MHz/4
+ * N = 12000
+ * C = 53536 = TMR0
+ * 
+ 
+ */
+
+#include <xc.h>
+#define _XTAL_FREQUENCY 48000000UL
+int xsec=5;
+float yms=500;
+int count = 0;
+
+
+void led1(){
+    LATBbits.LATB0 =1;
+    LATBbits.LATB2 =1;
+    LATBbits.LATB4 =1;
+    LATBbits.LATB6 =1;
+}
+void led2(){
+    LATBbits.LATB1 =1;
+    LATBbits.LATB3 =1;
+    LATBbits.LATB5 =1;
+    LATBbits.LATB7 =1;
+}
+void main(void) {
+    LATB = 0;
+    PORTB = 0;
+    T1CON = 0x00;
+    TMR1IE = 1;
+    TMR1IF = 0;
+    GIE = 1;
+    PEIE = 1;
+    int count=0,flag = 0;
+    LATBbits.LATB1 =1;
+    LATBbits.LATB3 =1;
+    LATBbits.LATB5 =1;
+    LATBbits.LATB7 =1;
+    while(1){
+        while(count<yms){
+            TMR0 = 53536;
+            TMR1ON = 1;
+            while(!TMR1IF);
+            TMR1IF=1;
+            TMR1ON=0;
+            count++;
+        }
+        LATB = 0;
+        count=0;
+        while(count<(xsec*1000)){
+            TMR1 = 53536;
+            TMR1ON = 1;
+            while(!TMR1IF);
+            TMR1IF=1;
+            TMR1ON=0;
+            count++;
+        }
+        if(flag==0){
+            led1();
+            flag=1;
+        }
+        else if(flag==1){
+            led2();
+            flag=0;
+        }
+        
+    }
+    
+    return;
+}
+
+
+
+//OR
+
+#include<pic18f4550.h>
+//#define _XTAL_FREQ 4000000
+void main (void){
+    
+    TRISB=0;
+    PORTB=0;
+    T1CON=0x80;
+    TMR1IF=0;
+    while(1){
+        GIE=1;
+        TMR1IE=1;
+        for(int i=0;i<500;i++){
+            TMR1=5536;
+            TMR0ON=1;
+            while(!TMR1IF){
+                TMR1IF=0;
+                TMR1ON=0;
+                PORTB=~PORTB;
+            }
+            
+        }
+    }
+    return;
+}
+

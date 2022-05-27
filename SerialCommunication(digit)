@@ -1,0 +1,59 @@
+#include <xc.h>
+#define Fosc 48000000UL
+
+
+
+void UARTInit(unsigned int baudrate)
+{
+    TRISCbits.RC6=0;
+    TRISCbits.RC7=1;
+    
+    SPBRG=(unsigned char) (((Fosc/64)/baudrate)-1);
+    BAUDCON=0b00000000;
+    TXSTA=0b00100000;
+    RCSTA=0b10010000;
+    RCIE=1;
+    
+
+}
+void result(int num,int multi)
+{
+    int k=num*multi;
+    char res[2]={'0','0'};
+    int count=0;
+    char last;
+    while(k>0)
+    {
+        last=(k%10) + '0';
+        res[count]=last;
+        count++;
+        k/=10;
+        
+    }
+    while(TXIF==0);
+    TXIF=0;
+    TXREG=  num +'0';
+    while(TXIF==0);
+    TXIF=0;
+    TXREG=  'x';
+    while(TXIF==0);
+    TXIF=0;
+    TXREG=multi +'0';
+    while(TXIF==0);
+    TXIF=0;
+    TXREG=  '=';
+   
+    while(count>=0)
+    {
+        while(TXIF==0);
+        TXIF=0;
+        TXREG=res[count];
+        count--;
+    
+    }
+    while(TXIF==0);
+    TXIF=0;
+    TXREG='\n';
+    
+    
+}

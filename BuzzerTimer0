@@ -1,0 +1,74 @@
+#include <xc.h>
+int x;
+int y;
+int cx=0,cy=0,flag = 1;
+void __interrupt() tmr1_isr(){
+    
+    if(flag ==0){
+        cx++;
+        if(cx==x*1000){
+            LATAbits.LATA5=~LATAbits.LATA5;
+            cx=0;
+            flag=1;
+        }
+        
+    }
+    else if(flag==1){
+      
+       cy++;
+        if(cy=y){
+            flag = 0;
+        } 
+    }
+    TMR1IF = 0;
+    TMR1=53536;
+    
+}
+void main(void) {
+    TRISAbits.TRISA5=0;
+    LATAbits.LATA5=0;
+    TMR1IE =1;
+    TMR1IF = 0;
+    GIE = 1;
+    PEIE = 1;
+    TMR1 = 53536;
+    TMR1ON = 1;
+    while(1);
+    return;
+}
+
+
+//OR
+
+#include<xc.h>
+#include<pic18f4550.h>
+    
+int c=0;
+void __interrupt() isr(void){
+     
+    if(TMR0IF){
+        TMR0=47536;
+        c++;
+        if(c==1500)// jo apna led me i tha x/y .....vo yaha c hai
+        { 
+            LATAbits.LATA5=~LATAbits.LATA5;
+            c=0;
+        } 
+        TMR0IF=0;
+    }
+}
+
+void main(void){
+    
+    TMR0=47536; 
+    T0CON=0x08;  // timer 1 ke case me its 0x80 and in timer 0 ke case me its 0x08//timer1 off
+    TMR0IF=0;
+    LATAbits.LATA5=0;
+    TRISAbits.TRISA5=0;
+    GIE=1;
+    PEIE=1;
+    TMR0IE=1;
+    TMR0ON=1;//timer1 on
+    while(1);
+    return;
+}
